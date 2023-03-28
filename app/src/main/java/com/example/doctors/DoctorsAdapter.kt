@@ -11,9 +11,30 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.doctors.util.ItemTouchHelperAdapter
+import java.util.*
 
 class DoctorsAdapter(var context: Context, var list: MutableList<Doctor>) :
-    RecyclerView.Adapter<DoctorsAdapter.MyHolder>() {
+    RecyclerView.Adapter<DoctorsAdapter.MyHolder>(), ItemTouchHelperAdapter {
+
+    override fun onItemMove(fromPosition: Int, toPosition:Int){
+        if (fromPosition < toPosition){
+            for (i in fromPosition until toPosition){
+                Collections.swap(list, i, i+1)
+            }
+        }
+        else{
+            for (i in fromPosition downTo toPosition +1 ){
+                Collections.swap(list,i ,i-1)
+            }
+        }
+        notifyItemMoved(fromPosition, toPosition)
+    }
+
+    override fun onItemDismiss(position: Int){
+        list.removeAt(position)
+        notifyItemRemoved(position)
+    }
     class MyHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val name: TextView = itemView.findViewById(R.id.name)
         val image: ImageView = itemView.findViewById(R.id.img)
@@ -39,7 +60,7 @@ class DoctorsAdapter(var context: Context, var list: MutableList<Doctor>) :
         holder.reviews.text = doctors.reviews
         holder.image.setImageResource(doctors.img)
 
-        var anim = AnimationUtils.loadAnimation(context, R.anim.anim1)
+        var anim = AnimationUtils.loadAnimation(context, R.anim.offer_anim)
         holder.main.startAnimation(anim)
     }
 
